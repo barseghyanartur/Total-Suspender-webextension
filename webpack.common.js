@@ -56,8 +56,9 @@ module.exports = {
       {
         test: /index\.js$/,
         include: [
-          path.resolve(__dirname, 'src/background/index.js'),
-          path.resolve(__dirname, 'src/popup/index.js'),
+          path.resolve(SRC_DIR, 'background/index.js'),
+          path.resolve(SRC_DIR, 'popup/index.js'),
+          path.resolve(SRC_DIR, 'options/index.js'),
         ],
         use: [
           {
