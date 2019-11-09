@@ -5,16 +5,13 @@
     }
   },
   "background": {
-      "page": "{{./background/index.html}}"
+    "page": "{{./background/index.html}}"
   },
   "browser_action": {
     "browser_style": true,
     "default_title": "Total Suspender",
     "default_popup": "{{./popup/index.html}}",
     "default_icon": "{{./icons/totalSuspender.svg}}"
-  },
-  "options_ui": {
-    "page": "{{./options/index.html}}"
   },
   "permissions": [
     "storage",

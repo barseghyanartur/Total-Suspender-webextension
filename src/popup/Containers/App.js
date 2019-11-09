@@ -1,10 +1,8 @@
-import Card from '../Components/Card';
-import TabsList from '../Components/TabsList';
+import { Card, TabsList } from '../Components';
 import Settings from './Settings';
 import Actions from './Actions';
 import Whitelist from './Whitelist';
 import Blacklist from './Blacklist';
-
 import '../index.scss';
 
 const App = {

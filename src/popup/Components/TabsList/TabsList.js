@@ -1,4 +1,3 @@
-
 const TabsList = {
   view: ({
     attrs: {

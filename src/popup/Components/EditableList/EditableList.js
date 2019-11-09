@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import TextInput from '../../Components/TextInput';
+import { TextInput } from '../';
 
 const EditableList = () => {
   const componentId = _.uniqueId('EditableList');
@@ -59,9 +59,10 @@ const EditableList = () => {
         onEdit: onEdit = () => {},
         onDelete: onDelete = () => {},
         entries: entries = [],
-        styles: {
+        classes: {
           listContainer = '',
           listEntry = '',
+          listEntryInner = '',
         },
       },
     }) => (
@@ -74,7 +75,9 @@ const EditableList = () => {
               onmouseenter={() => { state.hoveredEntry = entry; }}
               onmouseleave={() => { state.hoveredEntry = null; }}
             >
-              {entry}
+              <div className={listEntryInner}>
+                {entry}
+              </div>
               {state.hoveredEntry === entry && (
                 <div>
                   <a className="mx-1" onclick={() => editHandler(entry, `${componentId}${entryIndex}`)}>{browser.i18n.getMessage('buttonEditEntry') || 'Edit'}</a>

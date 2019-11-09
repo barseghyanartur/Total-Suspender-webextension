@@ -44,6 +44,12 @@ const setState = (newState) => {
   m.redraw();
 };
 
+const updateState = (changes) => {
+  const oldState = state();
+  const newState = { ...oldState, ...changes };
+  setState(newState);
+};
+
 // Watch for changes in localStorage and keep state in sync
 const storageListener = (changes, area) => {
   if (area !== 'local') {
@@ -78,4 +84,4 @@ const prepare = async () => {
 
 prepare();
 
-export { state, setState };
+export { state, setState, updateState };
