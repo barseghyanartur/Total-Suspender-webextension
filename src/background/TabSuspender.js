@@ -1,7 +1,6 @@
 /* eslint no-underscore-dangle: 0 */
 
-import _ from 'lodash';
-import { saveToStorage, loadFromStorage, stringToRegex } from '../utils';
+import { loadFromStorage } from '../utils';
 import config from './config';
 import context from './context';
 
@@ -14,7 +13,8 @@ class TabSuspender {
     // NOTE: actions are applied sequentially,
     // modifiedTabs contain tabs changed in preceding actions, return them in actions!
     // only modifiedTabs are meant to be changed
-    this.config = config.bind(this)();
+
+    this.config = config.call(this);
 
     this.tabHandlers = {
       onCreated: tab => this.discard({ type: 'created', id: tab.id }),
@@ -75,7 +75,7 @@ class TabSuspender {
   }
 
   createContextMenus() {
-    context.bind(this)();
+    context.call(this);
   }
 
   registerHandlers() {
