@@ -16,7 +16,7 @@ const Settings = () => ({
         prepend={(<span className="input-group-text">{browser.i18n.getMessage('titleDelaySuspend')}</span>)}
         value={state()['#input-delay-suspend']}
         onchange={e => updateState({ '#input-delay-suspend': e.target.value })}
-        pattern="[0-9]{1,4}"
+        pattern="[0-9]{1,6}"
       />
       <Toggle
         title={browser.i18n.getMessage('titleIgnoreAudible')}
