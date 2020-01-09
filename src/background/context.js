@@ -50,7 +50,7 @@ function context() {
     },
   ];
 
-  menus.forEach(({ id, title, contexts}) => {
+  menus.forEach(({ id, title, contexts }) => {
     // NOTE: browser.menus.create does NOT ignore unexpected properties for createProperties
     // object, so we can not just pass menu item, we have to omit handler and others,
     // otherwise it'll throw type error

@@ -2,6 +2,9 @@ import _ from 'lodash';
 import { saveToStorage, stringToRegex } from '../utils';
 
 function config() {
+  // NOTE: actions are applied sequentially,
+  // modifiedTabs contain tabs changed in preceding actions, return them in actions!
+  // only modifiedTabs are meant to be changed
   return [
     {
       id: 'default',
@@ -250,6 +253,6 @@ function config() {
       isEnabled: () => true,
     },
   ];
-};
+}
 
 export default config;

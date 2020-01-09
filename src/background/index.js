@@ -1,4 +1,5 @@
 /* eslint import/extensions: off */
+/* global PRODUCTION */
 
 import TabSuspender from './TabSuspender.js';
 import { Console } from '../utils.js';

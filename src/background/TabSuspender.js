@@ -9,11 +9,6 @@ class TabSuspender {
     this.action = null;
     this.console = console;
     this.discardEventEmitter = document;
-
-    // NOTE: actions are applied sequentially,
-    // modifiedTabs contain tabs changed in preceding actions, return them in actions!
-    // only modifiedTabs are meant to be changed
-
     this.config = config.call(this);
 
     this.tabHandlers = {
