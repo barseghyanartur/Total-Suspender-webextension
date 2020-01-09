@@ -153,5 +153,40 @@
   "blacklistDescription": {
     "message": "Only tabs with URL's containing patterns from this list will be suspended. Empty list is equivalent to having 'Blacklist: off'. To use regular expressions prepend ",
     "description": "Blacklisting functionality description, followed by code tag."
+  },
+
+  "titleExperimental": {
+    "message": "Experimental",
+    "description": "Experimental features navigation item title."
+  },
+
+  "titleEnableExperimental": {
+    "message": "Enable experimental features",
+    "description": "Title for button that toggles settings from experimental section"
+  },
+
+  "titleConfirmReload": {
+    "message": "Do not reload tabs immediately",
+    "description": "Text on button that toggles displaying a special page with reload button instead of immediately reloading it"
+  },
+
+  "titleShouldChangeIcon": {
+    "message": "Indicate discarded status with icon",
+    "description": "Text on button to toggle discard indication (dot)"
+  },
+
+  "titleDotColor": {
+    "message": "Icon dot hex color code",
+    "description": "Prepended to text field to specify dot color on suspended tabs icons"
+  },
+
+  "titleShouldChangeTitle": {
+    "message": "Indicate discarded status with text (in tab title)",
+    "description": "Text on button to toggle discard indication (text)"
+  },
+
+  "titlePrependText": {
+    "message": "Prepend text to discarded tab title",
+    "description": "Title for the field containing text to be prepended to discarded tabs titles"
   }
 }
