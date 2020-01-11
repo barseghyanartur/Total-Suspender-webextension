@@ -27,6 +27,14 @@ const initialState = {
   // Blacklist
   '#input-enable-blacklist': false,
   '#input-blacklist-pattern': new Set(),
+
+  // Experimental
+  '#input-enable-experimental': false,
+  '#input-confirm-reload': false,
+  '#input-should-change-icon': false,
+  '#input-dot-color': '#fff',
+  '#input-should-change-title': false,
+  '#input-prepend-text': '[S]',
 };
 
 const state = stream(initialState);

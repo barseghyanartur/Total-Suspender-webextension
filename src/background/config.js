@@ -17,7 +17,7 @@ function config() {
       id: '#input-suspend-all-planned',
       action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
         this.console.log('suspending all on planned', modifiedTabs);
-        browser.tabs.discard(modifiedTabs.map(tab => tab.id));
+        this.discard(modifiedTabs.map(tab => tab.id));
         // better make action generator accept async functions since this
         // below can cause unexpected behaviour
         saveToStorage({ '#input-suspend-all-planned': false });
@@ -176,7 +176,7 @@ function config() {
       id: '#input-suspend-planned',
       action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
         this.console.log('suspending on planned', modifiedTabs);
-        browser.tabs.discard(modifiedTabs.map(tab => tab.id));
+        this.discard(modifiedTabs.map(tab => tab.id));
         // Better make action generator accept async functions since this
         // below can cause unexpected behaviour
         saveToStorage({ '#input-suspend-planned': false });
@@ -222,7 +222,7 @@ function config() {
           this.console.log('setting timeout for', tab.id);
           const delaySuspendTimeoutId = setTimeout(() => {
             this.console.log('time is out for tab', tab.id);
-            browser.tabs.discard(tab.id);
+            this.discard([tab.id]);
             this.delaySuspendTimeoutIds[tab.id] = null;
           }, ms);
 
@@ -233,6 +233,59 @@ function config() {
       },
       isEnabled: value => !Number.isNaN(value) && value > 0,
       defaultValue: 60, // value provided in seconds
+    },
+    {
+      id: '#input-confirm-reload',
+      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+        this.discard = (tabs) => {
+          tabs.forEach((tabId) => {
+            browser.tabs.discard(tabId);
+          });
+        };
+        return modifiedTabs;
+      },
+      isEnabled: value => typeof value === 'boolean' && value,
+      defaultValue: false,
+    },
+    {
+      id: '#input-should-change-icon',
+      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+        return modifiedTabs;
+      },
+      isEnabled: value => typeof value === 'boolean' && value,
+      defaultValue: false,
+    },
+    {
+      id: '#input-dot-color',
+      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+        return modifiedTabs;
+      },
+      isEnabled: value => String(value).search(/#([0-9a-fA-F]{3}){1,2}/g),
+      defaultValue: '#fff',
+    },
+    {
+      id: '#input-should-change-title',
+      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+        return modifiedTabs;
+      },
+      isEnabled: value => typeof value === 'boolean' && value,
+      defaultValue: false,
+    },
+    {
+      id: '#input-prepend-text',
+      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+        return modifiedTabs;
+      },
+      isEnabled: () => true,
+      defaultValue: '[S]',
+    },
+    {
+      id: '#input-enable-experimental',
+      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+        return modifiedTabs;
+      },
+      isEnabled: value => typeof value === 'boolean' && value,
+      defaultValue: false,
     },
     {
       id: 'updateBadgeText',

@@ -30,7 +30,7 @@ const Experimental = () => ({
           prepend={(<span className="input-group-text">{browser.i18n.getMessage('titleDotColor')}</span>)}
           value={state()['#input-dot-color']}
           onchange={e => updateState({ '#input-dot-color': e.target.value })}
-          pattern="([0-9a-fA-F]{3}){1,2}"
+          pattern="#([0-9a-fA-F]{3}){1,2}"
         />
         <Toggle
           title={browser.i18n.getMessage('titleShouldChangeTitle')}

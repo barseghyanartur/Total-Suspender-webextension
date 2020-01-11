@@ -12,28 +12,32 @@ class TabSuspender {
     this.config = config.call(this);
 
     this.tabHandlers = {
-      onCreated: tab => this.discard({ type: 'created', id: tab.id }),
-      onActivated: ({ tabId }) => this.discard({ type: 'activated', id: tabId }),
+      onCreated: tab => this.emit({ type: 'created', id: tab.id }),
+      onActivated: ({ tabId }) => this.emit({ type: 'activated', id: tabId }),
       onRemoved: (tabId, removeInfo) => {
         const { isWindowClosing } = removeInfo;
-        this.discard({ type: 'removed', id: tabId, isWindowClosing });
+        this.emit({ type: 'removed', id: tabId, isWindowClosing });
       },
       onUpdated: (tabId, change) => {
         // TODO: change, add args in addListener to listen to specific changes
         if (!change.audible) {
           return;
         }
-        this.discard({ type: 'updated', id: tabId });
+        this.emit({ type: 'updated', id: tabId });
       },
-      onAttached: tabId => this.discard({ type: 'attached', id: tabId }),
-      onDetached: tabId => this.discard({ type: 'detached', id: tabId }),
+      onAttached: tabId => this.emit({ type: 'attached', id: tabId }),
+      onDetached: tabId => this.emit({ type: 'detached', id: tabId }),
     };
   }
 
   // Emits events that trigger this.config calls
-  discard(payload) {
+  emit(payload) {
     const event = new CustomEvent('discard', { detail: payload });
     this.discardEventEmitter.dispatchEvent(event);
+  }
+
+  discard(tabs) {
+    browser.tabs.discard(tabs);
   }
 
   handleAction(actionInfo) {
@@ -88,7 +92,7 @@ class TabSuspender {
     browser.storage.onChanged.addListener(async () => {
       await this.updateConfig();
       this.generateAction();
-      this.discard({ type: 'configChange' });
+      this.emit({ type: 'configChange' });
     });
   }
 

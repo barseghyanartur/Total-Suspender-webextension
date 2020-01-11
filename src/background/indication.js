@@ -2,11 +2,10 @@
 /* eslint import/extensions: off */
 /* eslint class-methods-use-this: off */
 
-import { loadFromStorage, createImage } from '../utils.js';
-import { settingsByName } from '../settings.js';
+import { createImage } from '../utils.js';
 
 /*
-How to track browser.tabs.discard and do some actions before tabs get actually discarded: 101
+How to track browser.tabs.discard and do some actions before tabs get actually discarded 101
 1. OFC one can not simply change tab.title or tab.favicon, that would have been to easy, right?
   Sadly, it doesn't work this way
 2. browser.tabs.onChanged triggers after tab has been discarded, making it useless to try
@@ -28,37 +27,7 @@ arbitrary actions before each native discard. Note, that, again, for avoiding po
 we are not allowed to have multiple effective onbeforeunload listeners.
 */
 
-class CustomDiscardIndication {
-  constructor() {
-    // Set default console to refer to enable custom logging
-    this.console = console;
-
-    // Load default values from settings.js
-    this.config = { ...settingsByName };
-  }
-
-  // Load settings from local storage and merge them with the current config
-  async loadSettings() {
-    const loadedSettings = await loadFromStorage();
-    this.mergeSettings(loadedSettings);
-  }
-
-  // Merge new settings with the current config
-  mergeSettings(loadedSettings) {
-    // Merge loadedSettings values with current config by ids
-    const newConfig = { ...this.config };
-    const loadedSettingsNames = Object.keys(loadedSettings);
-    loadedSettingsNames.forEach((name) => {
-      if (!Object.prototype.hasOwnProperty.call(this.config, name)) {
-        return;
-      }
-      newConfig[name].value = loadedSettings[name];
-    });
-
-    this.console.log('new config', newConfig);
-    this.config = newConfig;
-  }
-
+class CustomDiscard {
   async changeTitle(tab, prependText) {
     const injectableChangeTitle = (title) => {
       document.title = title;
@@ -191,10 +160,19 @@ class CustomDiscardIndication {
     this.console.log(`executed in ${executed.length} frames`);
   }
 
+  discard(tabs) {
+    tabs.forEach(async (tab) => {
+      const discardable = /^(http)/.test(tab.url);
+      if (!discardable) {
+        return;
+      }
+
+      const CODE = await this.generateCode(tab);
+      await this.injectCode(tab, CODE);
+    });
+  }
+
   async run() {
-   /* // Initial load
-    await this.loadSettings();
-    this.console.log('run');
     // Set up a listener to trigger native discard on message from tab
     const handleMessage = async (request, sender) => {
       const { tab } = sender;
@@ -231,15 +209,7 @@ class CustomDiscardIndication {
       await this.injectCode(tab, CODE);
     }, { properties: ['discarded'] });
 
-    // Listen to options changes
-    browser.storage.onChanged.addListener(async (changes, area) => {
-      if (area !== 'local') {
-        return;
-      }
-
-      await this.loadSettings();
-    });*/
   }
 }
 
-export default CustomDiscardIndication;
+export default CustomDiscard;

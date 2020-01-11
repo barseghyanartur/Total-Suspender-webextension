@@ -6,7 +6,7 @@ function context() {
       id: 'total-suspender-suspend',
       title: 'Suspend',
       contexts: ['tab'],
-      handler: (info, tab) => browser.tabs.discard(tab.id),
+      handler: (info, tab) => this.discard([tab.id]),
     },
     {
       id: 'total-suspender-whitelist-page',
