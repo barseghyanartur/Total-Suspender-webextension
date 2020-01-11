@@ -24,3 +24,16 @@ export class Console {
     console.log(`%c${this.title} ---`, 'color: red;', ...body);
   }
 }
+
+// Asyncronously load an image, return promise
+export const createImage = src => new Promise((resolve, reject) => {
+  const image = new Image();
+  image.crossOrigin = 'anonymous';
+  image.onload = () => {
+    resolve(image);
+  };
+  image.onerror = () => {
+    reject();
+  };
+  image.src = src;
+});

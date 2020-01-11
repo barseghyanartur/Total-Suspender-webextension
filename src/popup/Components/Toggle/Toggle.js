@@ -12,6 +12,7 @@ const Toggle = {
     attrs: {
       title,
       checked: checked = true,
+      disabled: disabled = false,
       onchange: onchange = () => {},
       id: id = _.uniqueId(),
       onText: onText = browser.i18n.getMessage('toggleDefaultOn') || 'On',
@@ -26,7 +27,7 @@ const Toggle = {
         </div>
       )}
       <div className="toggle">
-        <input type="checkbox" {...{ id, checked, onchange }}/>
+        <input type="checkbox" {...{ id, checked, disabled, onchange }}/>
         <label className={`btn ${purposes[purpose]}`} for={id} data-on-text={onText} data-off-text={offText} />
       </div>
     </div>
