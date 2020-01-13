@@ -34,6 +34,7 @@ module.exports = {
                 'link:href',
                 'script:src',
                 'img:src',
+                'svg:src',
               ],
             },
           },

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import { saveToStorage, stringToRegex } from '../utils';
+import CustomDiscard from './injectable';
 
 function config() {
   // NOTE: actions are applied sequentially,
@@ -234,20 +235,76 @@ function config() {
       isEnabled: value => !Number.isNaN(value) && value > 0,
       defaultValue: 60, // value provided in seconds
     },
+
+    //By default, pages you open in this way will be stored in the user's history, just like normal web
+    // pages. If you don't want to have this behavior, use history.deleteUrl() to remove the
+    //browser's record:
+
+    // wot do on reload
+    // wot do on discard
+    // wot do on close, on experimental disabled
     {
       id: '#input-confirm-reload',
-      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
-        this.discard = (tabs) => {
-          tabs.forEach((tabId) => {
-            browser.tabs.discard(tabId);
+      action: value => () => (rawTabs, modifiedTabs = rawTabs) => {
+        if (!value) {
+          this.discard = (tabs) => browser.tabs.discard(tabs);
+          return modifiedTabs;
+        }
+
+        this.discard = async (tabs) => {
+          this._placeholdered = this._placeholdered || {};
+          tabs.forEach(async (tabId) => {
+            const tab = await browser.tabs.get(tabId);
+            const { index, windowId, title, favIconUrl } = tab;
+
+            console.log(
+              this._placeholdered,
+              Object.keys(this._placeholdered),
+              tabId,
+              Object.keys(this._placeholdered).includes(tabId),
+              Object.values(this._placeholdered),
+              tabId,
+              Object.values(this._placeholdered).includes(tabId)
+            );
+
+            if (Object.keys(this._placeholdered).includes(String(tabId))
+              || Object.values(this._placeholdered).includes(tabId)
+            ) {
+              return;
+            }
+            console.log('custom discard');
+            const code = await CustomDiscard.generateCode(tab, '[S]', '#ffffff');
+            console.log(code);
+
+            const { id: placeholderTabId } = await browser.tabs.create({
+              url: require('../refresh/index.html'),
+              index: index + 1,
+              windowId,
+            });
+
+            await browser.tabs.executeScript({
+              placeholderTabId,
+              code,
+            });
+
+            this._placeholdered[tabId] = placeholderTabId;
+
+            //await browser.tabs.hide(tabId);
+            //await browser.tabs.discard(tabId);
+
+            //const port = browser.tabs.connect(placeholderTabId);
+            //port.postMessage({ title, favIconUrl });
+            
+            //port.onMessage.addListener();
+            //port.onDisconnect.addListener();
           });
         };
         return modifiedTabs;
       },
-      isEnabled: value => typeof value === 'boolean' && value,
+      isEnabled: () => true,
       defaultValue: false,
     },
-    {
+    /*{
       id: '#input-should-change-icon',
       action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
         return modifiedTabs;
@@ -257,7 +314,7 @@ function config() {
     },
     {
       id: '#input-dot-color',
-      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+      action: value => () => (rawTabs, modifiedTabs = rawTabs) => {
         return modifiedTabs;
       },
       isEnabled: value => String(value).search(/#([0-9a-fA-F]{3}){1,2}/g),
@@ -273,7 +330,7 @@ function config() {
     },
     {
       id: '#input-prepend-text',
-      action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+      action: value => () => (rawTabs, modifiedTabs = rawTabs) => {
         return modifiedTabs;
       },
       isEnabled: () => true,
@@ -282,11 +339,12 @@ function config() {
     {
       id: '#input-enable-experimental',
       action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
+
         return modifiedTabs;
       },
       isEnabled: value => typeof value === 'boolean' && value,
       defaultValue: false,
-    },
+    },*/
     {
       id: 'updateBadgeText',
       action: () => actionInfo => (rawTabs, modifiedTabs = rawTabs) => {
