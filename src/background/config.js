@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { saveToStorage, loadFromStorage, stringToRegex } from '../utils';
+import { saveToStorage, stringToRegex } from '../utils';
 import CustomDiscard from './injectable';
 
 function config() {
@@ -258,44 +258,23 @@ function config() {
             .filter(tabId => !(Object.keys(this._placeholdered).includes(String(tabId)) || Object.values(this._placeholdered).includes(tabId)))
             .map(async (tabId) => {
               const tab = await browser.tabs.get(tabId);
-              // const { index, windowId } = tab;
-
               const code = await CustomDiscard.generateCode(tab, '[S]', '#ffffff');
 
+              // eslint-disable-next-line global-require
+              await browser.tabs.update(tabId, { url: require('../refresh/index.html')});
 
-              await browser.tabs.update(tabId, {
-                url: require('../refresh/index.html'),
-              });
-              /* const { id: placeholderTabId } = await browser.tabs.create({
-                url: require('../refresh/index.html'),
-                index: index + 1,
-                windowId,
-              }); */
-
-              await browser.tabs.executeScript(tabId, {
-                code,
-              });
+              setTimeout(() => browser.tabs.executeScript(tabId, { code }), 500);
 
               this._placeholdered[tabId] = tabId;
-
-
-              // await browser.tabs.hide(tabId);
-              // await browser.tabs.discard(tabId);
-
-              // const port = browser.tabs.connect(placeholderTabId);
-              // port.postMessage({ title, favIconUrl });
-
-              // port.onMessage.addListener();
-              // port.onDisconnect.addListener();
             })
         );
 
         return modifiedTabs;
       },
-      isEnabled: () => true,
+      isEnabled: value => typeof value === 'boolean' && value,
       defaultValue: false,
     },
-    /*{
+    {
       id: '#input-should-change-icon',
       action: () => () => (rawTabs, modifiedTabs = rawTabs) => {
         return modifiedTabs;
@@ -335,7 +314,7 @@ function config() {
       },
       isEnabled: value => typeof value === 'boolean' && value,
       defaultValue: false,
-    },*/
+    },
     {
       id: 'updateBadgeText',
       action: () => actionInfo => (rawTabs, modifiedTabs = rawTabs) => {
