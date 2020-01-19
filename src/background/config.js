@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { saveToStorage, stringToRegex } from '../utils';
+import { saveToStorage, loadFromStorage, stringToRegex } from '../utils';
 import CustomDiscard from './injectable';
 
 function config() {
@@ -247,58 +247,49 @@ function config() {
       id: '#input-confirm-reload',
       action: value => () => (rawTabs, modifiedTabs = rawTabs) => {
         if (!value) {
-          this.discard = (tabs) => browser.tabs.discard(tabs);
+          this.discard = tabs => browser.tabs.discard(tabs);
           return modifiedTabs;
         }
 
-        this.discard = async (tabs) => {
-          this._placeholdered = this._placeholdered || {};
-          tabs.forEach(async (tabId) => {
-            const tab = await browser.tabs.get(tabId);
-            const { index, windowId, title, favIconUrl } = tab;
+        this._placeholdered = this._placeholdered || {};
 
-            console.log(
-              this._placeholdered,
-              Object.keys(this._placeholdered),
-              tabId,
-              Object.keys(this._placeholdered).includes(tabId),
-              Object.values(this._placeholdered),
-              tabId,
-              Object.values(this._placeholdered).includes(tabId)
-            );
+        this.discard = tabs => Promise.all(
+          tabs
+            .filter(tabId => !(Object.keys(this._placeholdered).includes(String(tabId)) || Object.values(this._placeholdered).includes(tabId)))
+            .map(async (tabId) => {
+              const tab = await browser.tabs.get(tabId);
+              // const { index, windowId } = tab;
 
-            if (Object.keys(this._placeholdered).includes(String(tabId))
-              || Object.values(this._placeholdered).includes(tabId)
-            ) {
-              return;
-            }
-            console.log('custom discard');
-            const code = await CustomDiscard.generateCode(tab, '[S]', '#ffffff');
-            console.log(code);
+              const code = await CustomDiscard.generateCode(tab, '[S]', '#ffffff');
 
-            const { id: placeholderTabId } = await browser.tabs.create({
-              url: require('../refresh/index.html'),
-              index: index + 1,
-              windowId,
-            });
 
-            await browser.tabs.executeScript({
-              placeholderTabId,
-              code,
-            });
+              await browser.tabs.update(tabId, {
+                url: require('../refresh/index.html'),
+              });
+              /* const { id: placeholderTabId } = await browser.tabs.create({
+                url: require('../refresh/index.html'),
+                index: index + 1,
+                windowId,
+              }); */
 
-            this._placeholdered[tabId] = placeholderTabId;
+              await browser.tabs.executeScript(tabId, {
+                code,
+              });
 
-            //await browser.tabs.hide(tabId);
-            //await browser.tabs.discard(tabId);
+              this._placeholdered[tabId] = tabId;
 
-            //const port = browser.tabs.connect(placeholderTabId);
-            //port.postMessage({ title, favIconUrl });
-            
-            //port.onMessage.addListener();
-            //port.onDisconnect.addListener();
-          });
-        };
+
+              // await browser.tabs.hide(tabId);
+              // await browser.tabs.discard(tabId);
+
+              // const port = browser.tabs.connect(placeholderTabId);
+              // port.postMessage({ title, favIconUrl });
+
+              // port.onMessage.addListener();
+              // port.onDisconnect.addListener();
+            })
+        );
+
         return modifiedTabs;
       },
       isEnabled: () => true,
