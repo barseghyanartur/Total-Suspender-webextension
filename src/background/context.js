@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import { saveToStorage } from '../utils';
 
 function context() {

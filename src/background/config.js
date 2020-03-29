@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 import _ from 'lodash';
 import { saveToStorage, stringToRegex } from '../utils';
 import CustomDiscard from './injectable';
@@ -262,9 +263,7 @@ function config() {
 
               // eslint-disable-next-line global-require
               await browser.tabs.update(tabId, { url: require('../refresh/index.html')});
-
               setTimeout(() => browser.tabs.executeScript(tabId, { code }), 500);
-
               this._placeholdered[tabId] = tabId;
             })
         );
